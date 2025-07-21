@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎸 Gitara Kombat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e);
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            padding: 80px 20px 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff006e, #8338ec, #3a86ff);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: introFade 4s ease-in-out forwards;
+        }
+
+        .intro-text {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+            animation: glow 1s ease-in-out infinite alternate;
+        }
+
+        .countdown {
+            font-size: 4rem;
+            font-weight: bold;
+            animation: countdownPulse 1s ease-in-out;
+        }
+
+        @keyframes introFade {
+            0%, 70% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
+            to { text-shadow: 0 0 30px rgba(255, 255, 255, 1); }
+        }
+
+        @keyframes countdownPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .score-display {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            padding: 15px 30px;
+            border-radius: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(247, 147, 30, 0.3);
+            animation: scoreGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes scoreGlow {
+            from { box-shadow: 0 5px 15px rgba(247, 147, 30, 0.3); }
+            to { box-shadow: 0 5px 25px rgba(247, 147, 30, 0.6); }
+        }
+
+        .guitar-container {
+            position: relative;
+            margin: 40px 0;
+        }
+
+        .guitar-circle {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff006e, #8338ec, #3a86ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: guitarPulse 2s ease-in-out infinite;
+            box-shadow: 0 0 40px rgba(131, 56, 236, 0.6);
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .guitar-circle:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes guitarPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(131, 56, 236, 0.6); }
+            50% { transform: scale(1.05); box-shadow: 0 0 60px rgba(131, 56, 236, 0.8); }
+        }
+
+        .guitar-icon {
+            font-size: 8rem;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+            animation: guitarRotate 4s ease-in-out infinite;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        @keyframes guitarRotate {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        .click-button {
+            background: linear-gradient(45deg, #ff006e, #ff4081);
+            border: none;
+            padding: 20px 50px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255, 0, 110, 0.4);
+            margin: 30px 0;
+        }
+
+        .click-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 0, 110, 0.6);
+        }
+
+        .click-button:active {
+            transform: translateY(0);
+        }
+
+        .rewards-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .reward-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .floating-points {
+            position: absolute;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ff6b35;
+            pointer-events: none;
+            animation: floatUp 1s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
+        }
+
+        .navigation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            display: flex;
+            justify-content: space-around;
+            z-index: 100;
+        }
+
+        .nav-button {
+            background: linear-gradient(45deg, #8338ec, #3a86ff);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 15px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 90%;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .reward-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(45deg, #ff006e, #8338ec);
+            padding: 20px 40px;
+            border-radius: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            z-index: 2000;
+            animation: rewardPop 2s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes rewardPop {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    
+    <div class="intro-screen" id="introScreen">
+        <div class="intro-text">Qani KETDIK!</div>
+        <div class="countdown" id="countdown">YAK!</div>
+    </div>
+
+    <div class="game-container">
+        <div class="score-display" id="scoreDisplay">
+            💰 <span id="score">0</span> so'm
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        
+        <div class="guitar-container">
+            <div class="guitar-circle" id="guitarCircle" onclick="clickGuitar()">
+                <div class="guitar-icon">🎸</div>
+            </div>
+        </div>
+        
+        <button class="click-button" onclick="clickGuitar()">
+            💥 Chok!
+        </button>
+        
+        <button class="nav-button" onclick="openModal('rewards')" style="margin-top: 20px;">
+            🎁 Mukofotlar
+        </button>
+    </div>
+    
+    <div class="navigation">
+        <button class="nav-button" onclick="openModal('shop')">🛍 Do'kon</button>
+        <button class="nav-button" onclick="openModal('rating')">📊 Reyting</button>
+        <button class="nav-button" onclick="subscribeChannel()">📢 Obuna</button>
+    </div>
+    
+    <div class="modal" id="shopModal">
+        <div class="modal-content">
+            <h2>🛍 Do'kon</h2>
+            <div class="reward-item">
+                <span>Click kuchi +1</span>
+                <button onclick="buyUpgrade('click', 1000)">1000 so'm</button>
+            </div>
+            <div class="reward-item">
+                <span>Auto-click</span>
+                <button onclick="buyUpgrade('auto', 5000)">5000 so'm</button>
+            </div>
+            <button onclick="closeModal()">Yopish</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="rewardsModal">
+        <div class="modal-content">
+            <h2>🎁 Mukofotlar</h2>
+            <div class="reward-item">
+                <span>1M XP</span>
+                <span>🎉 Gitara simi!</span>
+            </div>
+            <div class="reward-item">
+                <span>Har 1M XP</span>
+                <span>💸 20,000 bonus</span>
+            </div>
+            <button onclick="closeModal()">Yopish</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="ratingModal">
+        <div class="modal-content">
+            <h2>📊 XP Reyting</h2>
+            <div class="reward-item">
+                <span>1. Siz</span>
+                <span id="userXP">0 XP</span>
+            </div>
+            <button onclick="closeModal()">Yopish</button>
+        </div>
+    </div>
+
+    <script>
+        // Load saved game state
+        function loadGameState() {
+            const saved = JSON.parse(JSON.stringify({
+                score: 0,
+                clickPower: 1,
+                autoClick: false,
+                xp: 0,
+                subscribed: false,
+                rewardsClaimed: {}
+            }));
+            
+            // Try to load from URL parameters if available (for demo purposes)
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('gameData')) {
+                try {
+                    const decoded = JSON.parse(atob(urlParams.get('gameData')));
+                    return { ...saved, ...decoded };
+                } catch (e) {
+                    return saved;
+                }
+            }
+            
+            return saved;
+        }
+
+        // Save game state
+        function saveGameState() {
+            try {
+                const encoded = btoa(JSON.stringify(gameState));
+                // In a real Telegram WebApp, you would use Telegram.WebApp.CloudStorage
+                // For demo, we'll use URL parameters
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.set('gameData', encoded);
+                history.replaceState({}, '', newUrl);
+            } catch (e) {
+                console.log('Save failed:', e);
+            }
+        }
+
+        let gameState = loadGameState();
+
+        // Intro animation
+        setTimeout(() => {
+            document.getElementById('countdown').textContent = 'DU!';
+        }, 1000);
+        
+        setTimeout(() => {
+            document.getElementById('countdown').textContent = 'SE!';
+        }, 2000);
+
+        // Create stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 2 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        function clickGuitar() {
+            const scoreElement = document.getElementById('score');
+            const guitarCircle = document.getElementById('guitarCircle');
+            
+            // Add score and XP
+            gameState.score += gameState.clickPower;
+            gameState.xp += gameState.clickPower;
+            
+            // Update display
+            scoreElement.textContent = formatNumber(gameState.score);
+            updateProgressBar();
+            
+            // Floating points animation
+            showFloatingPoints(guitarCircle, '+' + gameState.clickPower);
+            
+            // Check for rewards
+            checkRewards();
+            
+            // Update user XP display
+            document.getElementById('userXP').textContent = gameState.xp + ' XP';
+            
+            // Save game state
+            saveGameState();
+        }
+
+        function showFloatingPoints(element, text) {
+            const floatingDiv = document.createElement('div');
+            floatingDiv.className = 'floating-points';
+            floatingDiv.textContent = text;
+            
+            const rect = element.getBoundingClientRect();
+            floatingDiv.style.left = rect.left + rect.width / 2 + 'px';
+            floatingDiv.style.top = rect.top + 'px';
+            
+            document.body.appendChild(floatingDiv);
+            
+            setTimeout(() => {
+                document.body.removeChild(floatingDiv);
+            }, 1000);
+        }
+
+        function updateProgressBar() {
+            const nextMilestone = Math.ceil(gameState.xp / 1000000) * 1000000;
+            const progress = (gameState.xp % 1000000) / 1000000 * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function checkRewards() {
+            const millions = Math.floor(gameState.xp / 1000000);
+            
+            if (millions > 0 && !gameState.rewardsClaimed[millions]) {
+                gameState.rewardsClaimed[millions] = true;
+                
+                let reward = '';
+                let bonus = 0;
+                
+                if (millions === 1) {
+                    reward = '🎉 Siz gitara simini yutdingiz!';
+                } else {
+                    reward = '💸 20,000 so\'mlik bonus!';
+                    bonus = 20000;
+                }
+                
+                gameState.score += bonus;
+                showRewardNotification(reward);
+                document.getElementById('score').textContent = formatNumber(gameState.score);
+            }
+        }
+
+        function showRewardNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'reward-notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 2000);
+        }
+
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            }
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        function openModal(type) {
+            const modal = document.getElementById(type + 'Modal');
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => modal.style.display = 'none');
+        }
+
+        function buyUpgrade(type, cost) {
+            if (gameState.score >= cost) {
+                gameState.score -= cost;
+                
+                if (type === 'click') {
+                    gameState.clickPower++;
+                } else if (type === 'auto') {
+                    gameState.autoClick = true;
+                    startAutoClick();
+                }
+                
+                document.getElementById('score').textContent = formatNumber(gameState.score);
+                updateProgressBar();
+                closeModal();
+                saveGameState();
+            }
+        }
+
+        function startAutoClick() {
+            if (gameState.autoClick) {
+                setInterval(() => {
+                    gameState.score += gameState.clickPower;
+                    gameState.xp += gameState.clickPower;
+                    document.getElementById('score').textContent = formatNumber(gameState.score);
+                    updateProgressBar();
+                    checkRewards();
+                }, 1000);
+            }
+        }
+
+        function subscribeChannel() {
+            if (!gameState.subscribed) {
+                gameState.xp += 100;
+                gameState.subscribed = true;
+                document.getElementById('userXP').textContent = gameState.xp + ' XP';
+                showRewardNotification('📢 Obuna bo\'lgansiz! +100 XP');
+                saveGameState();
+            }
+        }
+
+        // Initialize
+        createStars();
+        
+        // Load saved data and update display
+        document.getElementById('score').textContent = formatNumber(gameState.score);
+        document.getElementById('userXP').textContent = gameState.xp + ' XP';
+        updateProgressBar();
+        
+        // Start auto-click if purchased
+        if (gameState.autoClick) {
+            startAutoClick();
+        }
+        
+        // Handle clicks outside modals
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
